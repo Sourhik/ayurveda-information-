@@ -1,0 +1,99 @@
+<%- include('partials/header') %>
+
+<!-- Leaflet Maps CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<section class="page-header" style="background-color: var(--primary-color);">
+    <div class="container text-center">
+        <h1>Find Stores & Clinics Near You</h1>
+        <p>Enable GPS to locate the nearest Ayurveda doctors and medical stores instantly.</p>
+    </div>
+</section>
+
+<section class="locator-section container" style="margin-top: 40px; margin-bottom: 60px;">
+    
+    <div class="locator-controls text-center" style="margin-bottom: 20px;">
+        <button id="locateBtn" class="btn">📍 Find Near Me</button>
+        <span id="locationStatus" style="margin-left: 15px; color: var(--accent-color);"></span>
+    </div>
+
+    <!-- The Map Container -->
+    <div id="map" style="height: 500px; border-radius: 10px; box-shadow: var(--shadow); z-index: 1;"></div>
+
+</section>
+
+<!-- Leaflet Maps JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Initialize standard map view at a generic location (e.g., center of India)
+    var map = L.map('map').setView([20.5937, 78.9629], 5);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const statusText = document.getElementById('locationStatus');
+
+    document.getElementById('locateBtn').addEventListener('click', () => {
+        statusText.innerText = "Locating you...";
+        map.locate({setView: true, maxZoom: 14});
+    });
+
+    // On Successful Geolocation
+    map.on('locationfound', function(e) {
+        var radius = e.accuracy / 2;
+        statusText.innerText = "Location Found!";
+
+        // User Marker
+        L.marker(e.latlng).addTo(map)
+            .bindPopup("<b>You are here</b>").openPopup();
+
+        L.circle(e.latlng, radius).addTo(map);
+
+        // Use Overpass API to fetch REAL nearby medical stores and clinics (Within 5km)
+        const overpassQuery = `
+            [out:json];
+            (
+              node["amenity"="pharmacy"](around:5000, ${e.latlng.lat}, ${e.latlng.lng});
+              node["amenity"="clinic"](around:5000, ${e.latlng.lat}, ${e.latlng.lng});
+            );
+            out 10;
+        `;
+        const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
+
+        statusText.innerText = "Searching for nearby stores using API...";
+
+        fetch(overpassUrl)
+            .then(response => response.json())
+            .then(data => {
+                if(data.elements && data.elements.length > 0) {
+                    data.elements.forEach(place => {
+                        const name = place.tags.name || (place.tags.amenity === 'pharmacy' ? 'Medical Store' : 'Local Clinic');
+                        L.marker([place.lat, place.lon]).addTo(map)
+                            .bindPopup(`<b>${name}</b><br>Real location found via API`);
+                    });
+                    statusText.innerText = `Found ${data.elements.length} clinics/stores nearby!`;
+                } else {
+                    throw new Error("No real clinics found nearby.");
+                }
+            })
+            .catch(err => {
+                console.log("Falling back to demo mode...", err);
+                // Demo Fallback: create mock clinics so the user always sees results
+                const loc1 = [e.latlng.lat + 0.005, e.latlng.lng + 0.005];
+                const loc2 = [e.latlng.lat - 0.008, e.latlng.lng - 0.004];
+                
+                L.marker(loc1).addTo(map).bindPopup("<b>Dr. Sharma's Partner Clinic</b><br>0.8 km away (Demo)");
+                L.marker(loc2).addTo(map).bindPopup("<b>AyurVedaWisdom Medical Store</b><br>1.2 km away (Demo)");
+                statusText.innerText = "Showing Partner Clinics (Demo Data).";
+            });
+    });
+
+    map.on('locationerror', function(e) {
+        statusText.innerText = "Could not access location. Please enable GPS.";
+        alert(e.message);
+    });
+</script>
+
+<%- include('partials/footer') %>

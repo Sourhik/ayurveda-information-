@@ -1,0 +1,19 @@
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">AyurVeda Wisdom</div>
+            <p>Ancient Healing for Modern Life.</p>
+            <div class="social-links">
+                <a href="#">Instagram</a>
+                <a href="#">Facebook</a>
+                <a href="#">Twitter</a>
+            </div>
+            <% if(typeof admin === 'undefined' || !admin) { %>
+                <a href="/admin/login" class="admin-login-link">Admin Login</a>
+            <% } %>
+            <p class="copy">&copy; <%= new Date().getFullYear() %> AyurVeda Wisdom. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="/js/main.js"></script>
+</body>
+</html>

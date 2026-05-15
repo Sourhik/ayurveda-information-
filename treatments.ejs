@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+    <div class="container text-center">
+        <h1>Ayurvedic Treatments</h1>
+        <p>Explore traditional therapies for deep healing and rejuvenation.</p>
+    </div>
+</section>
+
+<section class="treatments-list container">
+    <div class="cards-grid">
+        <% treatments.forEach(treatment => { %>
+            <div class="card treatment-card">
+                <div class="card-body text-center">
+                    <h3><%= treatment.name %></h3>
+                    <p><%= treatment.description %></p>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

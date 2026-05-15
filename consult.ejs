@@ -1,0 +1,80 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+    <div class="container text-center">
+        <h1>Consult an Ayurvedic Doctor</h1>
+        <p>Get personalized health advice from certified experts via online chat, video, or in-clinic visits.</p>
+    </div>
+</section>
+
+<section class="consultation-section container">
+    <div class="consult-grid">
+        <!-- Booking Options -->
+        <div class="booking-pane">
+            <h2>Book an Appointment</h2>
+            <p>Select your preferred mode of consultation:</p>
+            
+            <div class="booking-cards">
+                <div class="booking-card" onclick="alert('Online video booking portal coming soon!')">
+                    <span style="font-size: 2rem;">💻</span>
+                    <h3>Online Mode</h3>
+                    <p>Secure Video Call Consultation</p>
+                    <button class="btn btn-small">Book Video Call</button>
+                </div>
+                
+                <div class="booking-card" onclick="alert('Offline clinic booking portal coming soon!')">
+                    <span style="font-size: 2rem;">🏥</span>
+                    <h3>Offline Mode</h3>
+                    <p>Visit our nearby Partner Clinics</p>
+                    <button class="btn btn-small btn-outline">Find a Clinic</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Interface Mockup -->
+        <div class="chat-pane">
+            <div class="chat-header">
+                <h3>Live Doctor Chat</h3>
+                <span class="status-dot"></span> <small>Dr. Sharma is Online</small>
+            </div>
+            <div class="chat-history" id="chatHistory">
+                <div class="message doc-message">
+                    Hello! I'm Dr. Sharma. How can I help you with your health today?
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type your health query...">
+                <button class="btn" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const history = document.getElementById('chatHistory');
+        if (input.value.trim() === '') return;
+        
+        // Add User Message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'message user-message';
+        userMsg.textContent = input.value;
+        history.appendChild(userMsg);
+        
+        // Auto Scroll
+        history.scrollTop = history.scrollHeight;
+        input.value = '';
+
+        // Mock Doctor Reply
+        setTimeout(() => {
+            const docMsg = document.createElement('div');
+            docMsg.className = 'message doc-message';
+            docMsg.innerHTML = "Thank you for reaching out. A registered practitioner will review your symptoms shortly! If this is an emergency, please visit the <a href='/locator'>nearby clinic</a>.";
+            history.appendChild(docMsg);
+            history.scrollTop = history.scrollHeight;
+        }, 1500);
+    }
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+
+<section class="herb-detail container">
+    <a href="/herbs" class="back-link">&larr; Back to Herbs</a>
+    <div class="detail-grid">
+        <div class="detail-image">
+
+        </div>
+        <div class="detail-content">
+            <h1><%= herb.name %></h1>
+            <span class="badge"><%= herb.category %></span>
+            
+            <div class="info-group">
+                <h3>Benefits</h3>
+                <p><%= herb.benefits %></p>
+            </div>
+            
+            <div class="info-group">
+                <h3>How to Use</h3>
+                <p><%= herb.uses %></p>
+            </div>
+            
+            <div class="info-group">
+                <h3>Description</h3>
+                <p><%= herb.description %></p>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <a href="/remedies" class="btn btn-outline" style="border-width: 2px;">Find Diseases treated by <%= herb.name %></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<% if (relatedHerbs.length > 0) { %>
+<section class="related-herbs container">
+    <h2>Related Herbs in <%= herb.category %></h2>
+    <div class="cards-grid">
+        <% relatedHerbs.forEach(r_herb => { %>
+            <div class="card">
+
+                <div class="card-body">
+                    <h3><%= r_herb.name %></h3>
+                    <a href="/herbs/<%= r_herb._id %>" class="btn-outline">View Details</a>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</section>
+<% } %>
+
+<%- include('../partials/footer') %>

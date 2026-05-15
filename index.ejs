@@ -1,0 +1,73 @@
+<%- include('../partials/header') %>
+
+<section class="page-header">
+    <div class="container text-center">
+        <h1>Ayurvedic Herbs</h1>
+        <p>Discover nature's finest remedies for holistic health.</p>
+        <div style="margin-top: 20px;">
+            <a href="/remedies" class="btn" style="background-color: var(--primary-color);">Search Diseases in Remedies Dictionary</a>
+        </div>
+    </div>
+</section>
+
+<section class="herbs-filter container">
+    <form action="/herbs" method="GET" class="filter-form">
+        <input type="text" name="search" placeholder="Search herbs..." value="<%= searchQuery %>">
+        <select name="category">
+            <option value="">All Categories</option>
+            <option value="Immunity" <%= categoryFilter === 'Immunity' ? 'selected' : '' %>>Immunity</option>
+            <option value="Digestion" <%= categoryFilter === 'Digestion' ? 'selected' : '' %>>Digestion</option>
+            <option value="Skin" <%= categoryFilter === 'Skin' ? 'selected' : '' %>>Skin</option>
+            <option value="Stress" <%= categoryFilter === 'Stress' ? 'selected' : '' %>>Stress</option>
+            <option value="General" <%= categoryFilter === 'General' ? 'selected' : '' %>>General</option>
+        </select>
+        <button type="submit" class="btn">Filter</button>
+    </form>
+</section>
+
+<section class="herbs-list container">
+    <div class="cards-grid">
+        <% if (herbs.length === 0 && typeof wikiData !== 'undefined' && wikiData) { %>
+            <div class="card" style="grid-column: 1 / -1; border-color: var(--primary-color);">
+                <div class="card-body text-center">
+                    <span class="badge" style="background: #34495e;">External API Result</span>
+                    <h3 style="margin-top: 15px;"><%= wikiData.name %></h3>
+                    <p style="text-align: left; margin: 20px 0; font-size: 0.95rem; line-height: 1.6;"><%= wikiData.description %></p>
+                    <p style="color: #666; font-size: 0.85rem;">Information dynamically sourced from Wikipedia. You can add this officially string through the admin panel.</p>
+                </div>
+            </div>
+        <% } else if (herbs.length === 0) { %>
+            <p>No herbs found matching your search locally or online.</p>
+        <% } %>
+        <% herbs.forEach(herb => { %>
+            <div class="card">
+
+                <div class="card-body">
+                    <h3><%= herb.name %></h3>
+                    <span class="badge badge-<%= herb.category.toLowerCase() %>"><%= herb.category %></span>
+                    
+                    <div style="margin: 15px 0;">
+                        <h4 style="font-size: 0.9rem; color: var(--primary-color);">Benefits</h4>
+                        <p style="font-size: 0.85rem; color: #555;"><%= herb.benefits.substring(0, 80) %>...</p>
+                        
+                        <h4 style="font-size: 0.9rem; color: var(--primary-color); margin-top: 10px;">Primary Uses</h4>
+                        <p style="font-size: 0.85rem; color: #555;"><%= herb.uses.substring(0, 80) %>...</p>
+                    </div>
+
+                    <a href="/herbs/<%= herb._id %>" class="btn-outline" style="width: 100%; display: block; text-align: center;">View Full Profile</a>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+    <!-- Pagination -->
+    <% if (totalPages > 1) { %>
+        <div class="pagination">
+            <% for(let i = 1; i <= totalPages; i++) { %>
+                <a href="/herbs?page=<%= i %>&search=<%= searchQuery %>&category=<%= categoryFilter %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+            <% } %>
+        </div>
+    <% } %>
+</section>
+
+<%- include('../partials/footer') %>
